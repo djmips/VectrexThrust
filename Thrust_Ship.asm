@@ -1084,6 +1084,47 @@ sdtNoPod:
   addd ShipSpeedY
   std ShipSpeedY
 
+
+; if SCALING_JOY
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; ; scaling vectors by joystick input
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;   lda joystick_value
+;   asra
+;   asra                          ; equivalent to >>2 from C
+
+;   ldx #ScaleTable
+;   ldb ,x 
+;   stb scale                     ; 8 bit scale
+
+;   lda direction                 ; assume already clamped to 0-31
+;   lsla                          ; index into array of uint16 
+;   ldx #direction_vectors
+;   leax a,x 
+;   ldb ,x                        ; grab the x vector 8 bit
+
+;   lda scale
+;   mul                           ;  a * b -> d
+;   tfr a,b                       ; put high byte (a) into low (b)
+;   sex                           ; sigh extend b into 16 bit d
+;   aslb
+;   rola
+;   addd ship_speed_x             ; add scaled vector to ship speed x
+;   std ship_speedx
+
+;   ldb 1,x                       ; grab the y vector 8 bit
+
+;   lda scale
+;   mul                           ;  a * b -> d 
+;   tfr a,b                       ; put high byte (a) into low (b)
+;   sex                           ; sigh extend b into 16 bit d
+;   aslb
+;   rola
+;   addd ship_speed_y             ; add scaled vector to ship speed x
+;   std ship_speedy
+; endif
+
 sdtExit:
 
   mFreeLocals
@@ -1216,13 +1257,26 @@ DistanceTable:
  db 25,-16, 25,-14, 25,-14, 26,-13, 26,-13, 27,-12, 27,-12, 28,-10, 28,-10, 28,-9, 28,-9, 28,-7, 28,-7
  db 29,-6, 29,-6, 29,-4, 29,-4, 29,-3, 29,-3, 29,-1, 29,-1
 
-;Acceleration values xy-pairs for each ship direction
+;Acceleration values xy-pairs for each ship direction (32 entries)
 AccelTable:
  db 127,0, 124,-24, 117,-48, 105,-70, 89,-89, 70,-105, 48,-117, 24,-124
  db 0,-127, -24,-124, -48,-117, -70,-105, -89,-89, -105,-70, -117,-48, -124,-24
  db -127,0, -124,24, -117,48, -105,70, -89,89, -70,105, -48,117, -24,124
  db 0,127, 24,124, 48,117, 70,105, 89,89, 105,70, 117,48, 124,24
- 
+
+;if 0
+; ; Scale acceleration vectors by joystick value (64 entries)
+; ScaleTable:
+;  db 0,4,8,12,16,20,24,28
+;  db 32,36,40,44,48,52,56,60
+;  db 64,68,72,76,80,84,88,92
+;  db 96,100,104,108,112,116,120,124
+;  db 128,132,136,140,144,148,152,156
+;  db 160,164,168,172,176,180,184,188
+;  db 192,196,200,204,208,212,216,220
+;  db 224,228,232,236,240,244,248,252
+;endif
+
 ;Map ShipAngle -> AlphaDir
 ShipAngleToAlpha:
  db   0,  8, 15, 23, 30, 38, 45, 53
