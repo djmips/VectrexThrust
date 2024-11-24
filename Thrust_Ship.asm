@@ -1069,8 +1069,14 @@ sdtSkipAlpha:
   bra sdtExit
 
 sdtNoPod:
+
   ;ax := AccelLUT[ dir*2 ] * 2;
   ;ay := AccelLUT[ dir*2+1 ] * 2;
+
+  ; lda LocalAngle,s
+  ; lsla
+  ; ldx #AccelTable
+  ; leax a,x
   ; ldb ,x
   ; sex
   ; aslb
@@ -1097,6 +1103,7 @@ sdtNoPod:
   asra                          ; equivalent to >>2 from C
 
   ldx #ScaleTable
+  leax a,x 
   ldb ,x 
   stb LocalScale,s              ; 8 bit scale
 
@@ -1104,25 +1111,46 @@ sdtNoPod:
   lsla                          ; index into array of uint16 
   ldx #AccelTable
   leax a,x 
-  ldb ,x                        ; grab the x vector 8 bit
 
   lda LocalScale,s
+
+  ldb ,x                        ; grab the x vector 8 bit
+  bpl xvecPositive:
+  negb 
+  mul                           ;  a * b -> d
+  tfr a,b
+  negb
+  bra xvecNegative:
+
+xvecPositive:
   mul                           ;  a * b -> d
   tfr a,b                       ; put high byte (a) into low (b)
+
+xvecNegative:  
   sex                           ; sigh extend b into 16 bit d
-  aslb
-  rola
+  ;aslb
+  ;rola
   addd ShipSpeedX               ; add scaled vector to ship speed x
   std ShipSpeedX
 
-  ldb 1,x                       ; grab the y vector 8 bit
-
   lda LocalScale,s
+
+  ldb 1,x                       ; grab the y vector 8 bit
+  bpl yvecPositive:
+  negb
+  mul                           ;  a * b -> d
+  tfr a,b 
+  negb
+  bra yvecNegative:
+
+yvecPositive:
   mul                           ;  a * b -> d 
   tfr a,b                       ; put high byte (a) into low (b)
+
+yvecNegative:
   sex                           ; sigh extend b into 16 bit d
-  aslb
-  rola
+  ;aslb
+  ;rola
   addd ShipSpeedY               ; add scaled vector to ship speed x
   std ShipSpeedY
 
