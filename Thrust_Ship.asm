@@ -1,7 +1,7 @@
 ; Code for handling ship and pod movement
 ; Copyright (C) 2004  Ville Krumlinde
 
-Gravity = 14
+Gravity = 0
 
 ; Gamemode settings
 ShipShotSpeeds: db 16,32,16
@@ -988,8 +988,9 @@ sdmYRangeFin:
 ;*****************
 Ship_DoThrust:                  ;Adjust speed and spin
   direct $c8
-  mDecLocals 1,0,0
+  mDecLocals 2,0,0
 LocalAngle = LocalB1
+LocalScale = LocalB2
 
   mTestFlag LockedThrustFlag
   bne sdtLocked
@@ -1000,13 +1001,13 @@ sdtLocked:
 sdtStoreAngle:
   sta LocalAngle,s
 
-;  lda LocalAngle,s
+  mTestFlag HasOrbFlag
+  beq sdtNoPod
+
+  lda LocalAngle,s
   lsla
   ldx #AccelTable
   leax a,x
-
-  mTestFlag HasOrbFlag
-  beq sdtNoPod
 
   ;ax := AccelLUT[ dir*2 ];
   ;ay := AccelLUT[ dir*2+1 ];
@@ -1070,19 +1071,19 @@ sdtSkipAlpha:
 sdtNoPod:
   ;ax := AccelLUT[ dir*2 ] * 2;
   ;ay := AccelLUT[ dir*2+1 ] * 2;
-  ldb ,x
-  sex
-  aslb
-  rola
-  addd ShipSpeedX
-  std ShipSpeedX
+  ; ldb ,x
+  ; sex
+  ; aslb
+  ; rola
+  ; addd ShipSpeedX
+  ; std ShipSpeedX
 
-  ldb 1,x
-  sex
-  aslb
-  rola
-  addd ShipSpeedY
-  std ShipSpeedY
+  ; ldb 1,x
+  ; sex
+  ; aslb
+  ; rola
+  ; addd ShipSpeedY
+  ; std ShipSpeedY
 
 
 ; if SCALING_JOY
@@ -1090,40 +1091,40 @@ sdtNoPod:
 ; ; scaling vectors by joystick input
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;   lda joystick_value
-;   asra
-;   asra                          ; equivalent to >>2 from C
+  lda vec_joy_1_y
+  bmi sdtExit
+  asra
+  asra                          ; equivalent to >>2 from C
 
-;   ldx #ScaleTable
-;   ldb ,x 
-;   stb scale                     ; 8 bit scale
+  ldx #ScaleTable
+  ldb ,x 
+  stb LocalScale,s              ; 8 bit scale
 
-;   lda direction                 ; assume already clamped to 0-31
-;   lsla                          ; index into array of uint16 
-;   ldx #direction_vectors
-;   leax a,x 
-;   ldb ,x                        ; grab the x vector 8 bit
+  lda LocalAngle,s              ; assume already clamped to 0-31
+  lsla                          ; index into array of uint16 
+  ldx #AccelTable
+  leax a,x 
+  ldb ,x                        ; grab the x vector 8 bit
 
-;   lda scale
-;   mul                           ;  a * b -> d
-;   tfr a,b                       ; put high byte (a) into low (b)
-;   sex                           ; sigh extend b into 16 bit d
-;   aslb
-;   rola
-;   addd ship_speed_x             ; add scaled vector to ship speed x
-;   std ship_speedx
+  lda LocalScale,s
+  mul                           ;  a * b -> d
+  tfr a,b                       ; put high byte (a) into low (b)
+  sex                           ; sigh extend b into 16 bit d
+  aslb
+  rola
+  addd ShipSpeedX               ; add scaled vector to ship speed x
+  std ShipSpeedX
 
-;   ldb 1,x                       ; grab the y vector 8 bit
+  ldb 1,x                       ; grab the y vector 8 bit
 
-;   lda scale
-;   mul                           ;  a * b -> d 
-;   tfr a,b                       ; put high byte (a) into low (b)
-;   sex                           ; sigh extend b into 16 bit d
-;   aslb
-;   rola
-;   addd ship_speed_y             ; add scaled vector to ship speed x
-;   std ship_speedy
-; endif
+  lda LocalScale,s
+  mul                           ;  a * b -> d 
+  tfr a,b                       ; put high byte (a) into low (b)
+  sex                           ; sigh extend b into 16 bit d
+  aslb
+  rola
+  addd ShipSpeedY               ; add scaled vector to ship speed x
+  std ShipSpeedY
 
 sdtExit:
 
