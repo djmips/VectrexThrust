@@ -465,7 +465,7 @@ scLockFinish:
 
   lda vec_joy_1_y
   bmi scNothrust:
-  cmpa #30
+  cmpa #20
   blt scNothrust:
 
     mEmitSound ThrustSoundId
@@ -1007,75 +1007,6 @@ sdtLocked:
 sdtStoreAngle:
   sta LocalAngle,s
 
-  mTestFlag HasOrbFlag
-  beq sdtNoPod
-
-  lda LocalAngle,s
-  lsla
-  ldx #AccelTable
-  leax a,x
-
-  ;ax := AccelLUT[ dir*2 ];
-  ;ay := AccelLUT[ dir*2+1 ];
-  ldb ,x
-  sex
-  addd ShipSpeedX
-  std ShipSpeedX
-
-  ldb 1,x
-  sex
-  addd ShipSpeedY
-  std ShipSpeedY
-
-  ;adjust spin
-;  lda LoopCounterLow
-;  anda #SpinFrameMask
-;  bne sdtSkipAlpha
-  lda FrameCounter
-  anda #FRAME6MASK
-  bne sdtSkipAlpha
-
-  ;calc index into spin-table
-  lda LocalAngle,s
-  ldx #ShipAngleToAlpha
-  lda a,x
-  suba AlphaHi
-  bcc sdtIdxOk
-    adda #ALPHA_MAX
-sdtIdxOk:
-
-  ;Calc index into sine-table, and decide if value is positive or negative
-  clrb
-  cmpa #ALPHA_MAX/2
-  blo sdtSinPositive
-    suba #ALPHA_MAX/2
-    decb
-sdtSinPositive:
-  ;IF W >= 60 then W := 120 - W;
-  cmpa #ALPHA_MAX/4
-  blo sdtNegSkip
-    eora #$FF
-    adda #ALPHA_MAX/2
-sdtNegSkip:
-  lsra                          ;a = 0..30, b = -1 if value is negative
-
-  ldx #SpinSinTab
-  lda a,x
-  tstb
-  beq sdtPositive
-    nega
-sdtPositive:
-  tfr a,b
-  sex
-
-  addd AlphaDelta
-  std AlphaDelta
-sdtSkipAlpha:
-
-  bra sdtExit
-
-sdtNoPod:
-
   ;ax := AccelLUT[ dir*2 ] * 2;
   ;ay := AccelLUT[ dir*2+1 ] * 2;
 
@@ -1105,8 +1036,7 @@ sdtNoPod:
 
   lda vec_joy_1_y
   bmi sdtExit
-  asra
-  asra                          ; equivalent to >>2 from C
+  asra                          ; signed range 0-127 -> 0-63  (scale table size is 64)
 
   ldx #ScaleTable
   leax a,x 
@@ -1165,6 +1095,76 @@ yvecNegative:
 ;noSlowY:  
   addd ShipSpeedY               ; add scaled vector to ship speed x
   std ShipSpeedY
+
+
+
+
+  mTestFlag HasOrbFlag
+  beq sdtExit
+
+  ; lda LocalAngle,s
+  ; lsla
+  ; ldx #AccelTable
+  ; leax a,x
+
+  ; ;ax := AccelLUT[ dir*2 ];
+  ; ;ay := AccelLUT[ dir*2+1 ];
+  ; ldb ,x
+  ; sex
+  ; addd ShipSpeedX
+  ; std ShipSpeedX
+
+  ; ldb 1,x
+  ; sex
+  ; addd ShipSpeedY
+  ; std ShipSpeedY
+
+  ;adjust spin
+;  lda LoopCounterLow
+;  anda #SpinFrameMask
+;  bne sdtSkipAlpha
+  lda FrameCounter
+  anda #FRAME6MASK
+  bne sdtSkipAlpha
+
+  ;calc index into spin-table
+  lda LocalAngle,s
+  ldx #ShipAngleToAlpha
+  lda a,x
+  suba AlphaHi
+  bcc sdtIdxOk
+    adda #ALPHA_MAX
+sdtIdxOk:
+
+  ;Calc index into sine-table, and decide if value is positive or negative
+  clrb
+  cmpa #ALPHA_MAX/2
+  blo sdtSinPositive
+    suba #ALPHA_MAX/2
+    decb
+sdtSinPositive:
+  ;IF W >= 60 then W := 120 - W;
+  cmpa #ALPHA_MAX/4
+  blo sdtNegSkip
+    eora #$FF
+    adda #ALPHA_MAX/2
+sdtNegSkip:
+  lsra                          ;a = 0..30, b = -1 if value is negative
+
+  ldx #SpinSinTab
+  lda a,x
+  tstb
+  beq sdtPositive
+    nega
+sdtPositive:
+  tfr a,b
+  sex
+
+  addd AlphaDelta
+  std AlphaDelta
+sdtSkipAlpha:
+
+
 
 sdtExit:
 
