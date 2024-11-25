@@ -1,7 +1,7 @@
 ; Code for handling ship and pod movement
 ; Copyright (C) 2004  Ville Krumlinde
 
-Gravity = 0
+Gravity = 14
 
 ; Gamemode settings
 ShipShotSpeeds: db 16,32,16
@@ -455,17 +455,24 @@ scLockFinish:
 
 
   ;Thrust
-  lda LocalInput,s
-  bita #Button3
+  ;lda LocalInput,s
+  ;bita #Button3
 ;  tst stick1_button3
-  beq scNotPressed_3
-    ldd ShipFuel
-    beq scNotPressed_3          ;Ship must have fuel left
+  ;beq scNotPressed_3
+
+  ldd ShipFuel
+  beq scNothrust          ;Ship must have fuel left
+
+  lda vec_joy_1_y
+  bmi scNothrust:
+  cmpa #30
+  blt scNothrust:
+
     mEmitSound ThrustSoundId
     mSetFlag ThrustFlag
     jsr Ship_DoThrust
     bra scThrustFin
-scNotPressed_3:                 ;No thrust
+scNothrust:                 ;No thrust
     mClearFlag ThrustFlag
 scThrustFin:
 
@@ -1128,8 +1135,11 @@ xvecPositive:
 
 xvecNegative:  
   sex                           ; sigh extend b into 16 bit d
-  ;aslb
-  ;rola
+  ;mTestFlag HasOrbFlag
+  ;bne noSlowX
+  ;asra
+  ;rorb
+;noSlowX:
   addd ShipSpeedX               ; add scaled vector to ship speed x
   std ShipSpeedX
 
@@ -1149,8 +1159,11 @@ yvecPositive:
 
 yvecNegative:
   sex                           ; sigh extend b into 16 bit d
-  ;aslb
-  ;rola
+  ;mTestFlag HasOrbFlag
+  ;bne noSlowY
+  ;asra
+  ;rorb
+;noSlowY:  
   addd ShipSpeedY               ; add scaled vector to ship speed x
   std ShipSpeedY
 
