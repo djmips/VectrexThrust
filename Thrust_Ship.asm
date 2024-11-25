@@ -1038,6 +1038,11 @@ sdtStoreAngle:
   bmi sdtExit
   asra                          ; signed range 0-127 -> 0-63  (scale table size is 64)
 
+  mTestFlag HasOrbFlag
+  beq noSlowY
+  asra                          ; less thrust with orb
+noSlowY:
+
   ldx #ScaleTable
   leax a,x 
   ldb ,x 
@@ -1064,11 +1069,6 @@ xvecPositive:
 
 xvecNegative:  
   sex                           ; sigh extend b into 16 bit d
-  ;mTestFlag HasOrbFlag
-  ;bne noSlowX
-  ;asra
-  ;rorb
-;noSlowX:
   addd ShipSpeedX               ; add scaled vector to ship speed x
   std ShipSpeedX
 
@@ -1088,11 +1088,6 @@ yvecPositive:
 
 yvecNegative:
   sex                           ; sigh extend b into 16 bit d
-  ;mTestFlag HasOrbFlag
-  ;bne noSlowY
-  ;asra
-  ;rorb
-;noSlowY:  
   addd ShipSpeedY               ; add scaled vector to ship speed x
   std ShipSpeedY
 
