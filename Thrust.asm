@@ -15,7 +15,8 @@
   db "GCE 2004",$80
   dw $FD0D      ;ptr to execrom-music
   db $FC,$30,  $72,$A8,  "THRUST FOR VECTREX 1.2",$80
-  db $FC,$30,  $60,$A8,  "BY VILLE ",$6a,$80
+  db $FC,$30,  $60,$A8,  "BY VILLE ",68,$80
+  db $FC,$30,  $4E,$A8,  "ANALOG MOD 0.1 BY DG",$80
   db $0
 
 Boot:
