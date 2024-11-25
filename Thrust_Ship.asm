@@ -541,8 +541,7 @@ scLRFinished:
 
   ;Shield/pull
   lda LocalInput,s
-  bita #Button2
-;  tst stick1_button2
+  bita #Button3
   lbeq scNoShield
     ldd ShipFuel
     lbeq scNoShield             ;Ship must have fuel left
