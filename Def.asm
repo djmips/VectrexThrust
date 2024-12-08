@@ -85,7 +85,7 @@ l1:
 
 ;Set the hi/lo part of a 16-bit register individually
 mCombine macro reg,hival,loval
-  ld\1 #(lo hival)<<8 | (lo loval)
+  ld\1 #(lo (hival))<<8 | (lo (loval))
   endm
 
 
@@ -192,7 +192,7 @@ s1=s1-1
 ;  s1 nr of 1-byte locals,
 ;  s2 nr of 2-byte locals
 ;  bufsize is size of extra buffer (can be omitted)
-;Locals are named Local1B etc for byte, Local1W for word, buffer is named LocalBuffer.
+;Locals are named LocalB1 etc for byte, Local1W for word, buffer is named LocalBuffer.
 mDecLocals macro s1,s2,bufsize
   nolist
 FrameSize=0
@@ -791,6 +791,7 @@ vec_joy_mux_2_x         equ     $c821
 vec_joy_mux_2_y         equ     $c822
 vec_joy_resltn          equ     $c81a
 _stick_type             equ     $c823
+vec_joy_1_x             equ     $c81b
 vec_joy_1_y             equ     $c81c
 _intensity              equ     $c827
 _music_ready            equ     $c856

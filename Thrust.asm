@@ -23,7 +23,7 @@ Boot:
   jsr eeprom_load
 
   ldd #$0103            ;init joystick
-  std $c81f
+  std vec_joy_mux_1_x
 
 ;  jsr Zzap_Start        ;uncomment while debugging bonusgame
 
