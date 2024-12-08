@@ -772,14 +772,26 @@ stick1_button1 equ $c812
 stick1_button2 equ $c813
 stick1_button3 equ $c814
 stick1_button4 equ $c815
+
+vec_button_1_1  equ $c812   ;stick 1 button 1
+vec_button_1_2  equ $c813   ; button 2
+vec_button_1_3  equ $c814   ; button 3
+vec_button_1_4  equ $c815   ; button 4
+vec_button_2_1  equ $c816   ;stick 2 button 1
+vec_button_2_2  equ $c817   ; button 2
+vec_button_2_3  equ $c818   ; button 3
+vec_button_2_4  equ $c819   ; button 4
+
 _text_size              equ     $c82a
-_stick1_mask            equ     $c81f
-_stick2_mask            equ     $c820
-_stick3_mask            equ     $c821
-_stick4_mask            equ     $c822
-_stick_res              equ     $c81a
+vec_joy_mux_1           equ     $c81F
+vec_joy_mux_1_x         equ     $c81f
+vec_joy_mux_1_y         equ     $c820
+vec_joy_mux_2           equ     $c821
+vec_joy_mux_2_x         equ     $c821
+vec_joy_mux_2_y         equ     $c822
+vec_joy_resltn          equ     $c81a
 _stick_type             equ     $c823
-_pot_y                  equ     $c81c
+vec_joy_1_y             equ     $c81c
 _intensity              equ     $c827
 _music_ready            equ     $c856
 _refresh_time           equ     $c83d
