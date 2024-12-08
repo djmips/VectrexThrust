@@ -123,7 +123,7 @@ ufcDoAdd:
     ;Atari 2600 code
     lda     FrameCnt            ; 3
     sta     FrameCnt1
-    bpl     .okCnt3             ; 2³
+    bpl     .okCnt3             ; 2ï¿½
     ora     #$40                ; 2         reset Cnt3
 .okCnt3:
     clc                         ; 2
@@ -131,7 +131,7 @@ ufcDoAdd:
     sta     FrameCnt            ; 3
 
     and     #$3f                ; 2
-    bne     .okCnt64            ; 2³
+    bne     .okCnt64            ; 2ï¿½
     lda     #$3f                ; 2         reset Cnt64
     BIT_W                       ; 2
 .okCnt64:
@@ -905,10 +905,10 @@ dswExit:
 ;*****************
 UpdateDoors:
   ;  DoorCounter
-  ;    0  : stängd, exit
+  ;    0  : stï¿½ngd, exit
   ;    bit 7
   ;      0 : opening
-  ;          öka med 1, om max sätt bit 7
+  ;          ï¿½ka med 1, om max sï¿½tt bit 7
   ;      1 : closing
   ;          minska med 1, om noll clear bit 7
   ;      >=DoorSize : fully open
