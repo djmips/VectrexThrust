@@ -66,8 +66,10 @@ mFxSplitTargetFx macro
 
 ;Emit effect, all registers except D are preserved
 mEmitFx macro FxTarget,FxType,IndexReg
-  if ('IndexReg'!='0') && ('IndexReg'!='b')
-    tfr IndexReg,b
+  if ('IndexReg'!='0')
+      if ('IndexReg'!='b')
+        tfr IndexReg,b
+      endif
   endif
   lda #FxTarget | (FxType<<4)
   jsr EmitFx
