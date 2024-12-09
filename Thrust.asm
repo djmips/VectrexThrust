@@ -1929,7 +1929,7 @@ rsPositiveY:
   ldb ,u+
   stb LocalB1,s
   mTestFlag HasOrbFlag
-  beq *+4
+  beq *+2
     ;Use different defaults for haspod
     ldb #1
   stb LocalBestI,s
@@ -2316,7 +2316,7 @@ svNoRefresh:
   bpl svScrollRight
     ;scroll left
     cmpb #256-EndBorderWidth
-    blo *+4
+    blo *+2
       clr ScrollX
     ldd ViewX
     subd #ScrollSpeed
@@ -2325,7 +2325,7 @@ svNoRefresh:
     bra svStoreX
 svScrollRight:
     cmpb #EndBorderWidth
-    bhi *+4
+    bhi *+2
       clr ScrollX
     ldd ViewX
     addd #ScrollSpeed
@@ -2349,7 +2349,7 @@ svScrollXFin:
   bpl svScrollDown
     ;scroll up
     cmpb #256-EndBorderWidth
-    blo *+4
+    blo *+2
       clr ScrollY
     leax -ScrollSpeed,x
     cmpx #WorldTopY
@@ -2358,7 +2358,7 @@ svScrollXFin:
     bra svStoreY
 svScrollDown:
     cmpb #EndBorderWidth
-    bhi *+4
+    bhi *+2
       clr ScrollY
     leax ScrollSpeed,x
     cmpx CurLevelEndY
