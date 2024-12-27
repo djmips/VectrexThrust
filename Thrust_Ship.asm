@@ -330,7 +330,7 @@ Ship_ConsoleControl:                    ;read input from joy + buttons, return s
   ;DP must be D0 when reading joystick
   mDptoD0
 
-  jsr read_joystick
+  jsr joy_analog
 
   ;A must have bit set for firebutton, to disable autofire
   lda #$1
@@ -688,6 +688,20 @@ sddNoThrust1:
   jsr rot_vec_list2             ;Rotate vectors
 
   jsr reset0ref                 ;Reset pen
+
+    lda vec_joy_1_y           ;Y
+    bmi no_draw
+
+    lda   #00                       ;Get y
+    ldb   #00                       ;Get x
+    jsr   move_pen7f_to_d           ;go to (x,y)
+
+    lda vec_joy_1_y           ;Y
+    ldb   #0                  ;Get x
+    jsr   draw_to_d                 ;draw a line to (x,y)
+
+    jsr reset0ref
+no_draw
 
   mGetScreenX ShipX
   subb #128
