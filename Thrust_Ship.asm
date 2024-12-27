@@ -388,16 +388,20 @@ sccNoButton2:
     ora #Button1
 sccNoButton1:
 
-  ldb $c81b     ;read joystick
+  ldb vec_joy_1_x     ;read joystick
   beq sccNoJoy
   bpl sccRight
+    cmpb #-40
+    bge sccNoJoy
     ora #JoyLeft
     bra sccNoJoy
 sccRight:
+    cmpb #40
+    blt sccNoJoy
     ora #JoyRight
 sccNoJoy:
 
-  ldb $c81c     ;todo: test down is lock
+  ldb vec_joy_1_y     ;todo: test down is lock
   beq sccNoUpDown
   bpl sccUp
     ora #JoyDown
@@ -689,6 +693,7 @@ sddNoThrust1:
 
   jsr reset0ref                 ;Reset pen
 
+; debug draw analog thrust
     lda vec_joy_1_y           ;Y
     bmi no_draw
 
@@ -926,7 +931,7 @@ sdmAlphaOk:
   lda #-1
   ldx AlphaDelta
   beq sdmExitAlphaDamping
-  bmi *+3
+  bmi *+1
     nega
   leax a,x
   stx AlphaDelta
@@ -1049,15 +1054,22 @@ sdtStoreAngle:
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   lda vec_joy_1_y
-  bmi sdtExit
+  lbmi sdtExit
   asra                          ; signed range 0-127 -> 0-63  (scale table size is 64)
 
-  mTestFlag HasOrbFlag
-  beq noSlowY
-  asra                          ; less thrust with orb
-noSlowY:
+  ;mTestFlag HasOrbFlag
+  ;beq noSlowY
+  ldb GameFlags1
+  bitb #HasOrbFlag
+  beq noSlow
 
+  ldx #ScaleTableSlow
+  bra scaleVector
+
+noSlow:
   ldx #ScaleTable
+  
+scaleVector:  
   leax a,x 
   ldb ,x 
   stb LocalScale,s              ; 8 bit scale
@@ -1314,7 +1326,6 @@ AccelTable:
  db -127,0, -124,24, -117,48, -105,70, -89,89, -70,105, -48,117, -24,124
  db 0,127, 24,124, 48,117, 70,105, 89,89, 105,70, 117,48, 124,24
 
-;if 0
 ; Scale acceleration vectors by joystick value (64 entries)
 ScaleTable:
   db 0,4,8,12,16,20,24,28
@@ -1325,7 +1336,16 @@ ScaleTable:
   db 160,164,168,172,176,180,184,188
   db 192,196,200,204,208,212,216,220
   db 224,228,232,236,240,244,248,252
-;endif
+
+ScaleTableSlow:
+  db 0,2,4,6,8,10,12,14
+  db 16,18,20,22,24,26,28,30
+  db 32,34,36,38,40,42,44,46
+  db 48,50,52,54,56,58,60,62
+  db 64,66,68,70,72,74,76,78
+  db 80,82,84,86,88,90,92,94
+  db 96,98,100,102,104,106,108,110
+  db 112,114,116,118,120,122,124,126
 
 ;Map ShipAngle -> AlphaDir
 ShipAngleToAlpha:

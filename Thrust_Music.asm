@@ -497,7 +497,7 @@ L_CMD8:
   inca
   anda #3
   cmpa #3
-  bne *+3
+  bne *+1
     clra
   sta DemoSelected
   puls d,pc      ;hack, return from music to title, otherwise two more channels will call this

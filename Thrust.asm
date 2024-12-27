@@ -12,7 +12,7 @@
 
   ;ROM-header
   db $67,$20
-  db "GCE 2004",$80
+  db "GCE 2024",$80
   dw $FD0D      ;ptr to execrom-music
   db $FC,$30,  $72,$A8,  "THRUST FOR VECTREX 1.2",$80
   db $FC,$30,  $60,$A8,  "BY VILLE ",68,$80

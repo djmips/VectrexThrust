@@ -151,7 +151,7 @@ tiModeLogo:
     ldd leOrbY,u
     subd #ScreenH / 2
     cmpd CurLevelEndY
-    blt *+5
+    blt *+3
       ldd CurLevelEndY
     std ViewY
     ldd leOrbX,u
@@ -226,7 +226,7 @@ tiSkipText:
   ldx #$C812
   lda #1
   tst LocalBonusGame,s
-  beq *+3
+  beq *+1
     inca
 tiNextButton:
   tst a,x
